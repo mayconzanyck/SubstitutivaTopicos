@@ -73,4 +73,16 @@ app.MapPut("/api/livros/{id}", ([FromRoute] int id, [FromBody] Livro livro, [Fro
     return Results.Ok(ctx.Livros.Include(t => t.Categoria).FirstOrDefault(t => t.Id == id));
 });
 
+// 5 - DELETE: Remover Livro
+app.MapDelete("/api/livros/{id}", ([FromRoute] int id, [FromServices] BibliotecaDbContext ctx) => {
+    Livro? livro = ctx.Livros.Find(id);
+    if(livro == null){
+        return Results.NotFound();
+    }
+
+    ctx.Livros.Remove(livro);
+    ctx.SaveChanges();
+    return Results.NoContent()
+});
+
 app.Run();
