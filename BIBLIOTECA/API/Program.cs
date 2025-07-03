@@ -25,4 +25,13 @@ app.MapPost("/api/livros", ([FromBody] Livro livro, [FromServices] BibliotecaDbC
     return Results.Created("", livro);
 });
 
+// 2 - GET: Listar todos Livros
+app.MapGet("/api/livros", ([FromServices] BibliotecaDbContext ctx) => {
+    var livros = ctx.Livros.Include(t => t.Categoria).ToList();
+    if(livros.Any()){
+        return Results.Ok(livros);
+    }
+    return Results.NotFound();
+});
+
 app.Run();
