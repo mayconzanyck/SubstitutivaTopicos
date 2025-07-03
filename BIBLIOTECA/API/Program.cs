@@ -63,20 +63,24 @@ app.MapPut("/api/livros/{id}", ([FromRoute] int id, [FromBody] Livro livro, [Fro
 
     var categoria = ctx.Categoria.Find(livro.CategoriaId);
     if (categoria == null) {
-        return Results.BadRequest("Categoria nula");
+        return Results.NotFound("Categoria inválida. O ID da categoria fornecido não existe.");
     }
 
     livro.Categoria = categoria;
 
-    if (string.IsNullOrWhiteSpace(livro.Titulo) || livro.Titulo.Length < 3) {
-        return Results.BadRequest("Os requisitos para criar o livro não foram atendidos.");
+    if (livro == null || livro.Titulo.Length < 3) {
+        return Results.BadRequest("Título deve ter no mínimo 3 caracteres.");
     }
 
-    entidade.Titulo = livro.Titulo;
-    entidade.StatusId = livro.StatusId;
-    entidade.Autor = livro.Autor;
+    livro.Titulo = titulo;
 
-    ctx.Livros.Update(entidade);
+    if (livro == null || livro.Autor.Length < 3) {
+        return Results.BadRequest("Autor deve ter no mínimo 3 caracteres.");
+    }
+
+    livro.Autor = autor;
+
+    ctx.Livros.Update(livro);
     ctx.SaveChanges();
     return Results.Ok(ctx.Livros.Include(t => t.Categoria).FirstOrDefault(t => t.Id == id));
 });
