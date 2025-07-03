@@ -14,6 +14,15 @@ public class BibliotecaDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Status>().HasData(
+            new Status() { Id = 1, Nome = "Pendente"},
+            new Status() { Id = 2, Nome = "Em desenvolvimente"},
+            new Status() { Id = 3, Nome = "Concluido"}
+        );
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
         modelBuilder.Entity<Categoria>().HasData(
             new Categoria() { Id = 1, Nome = "Poesia" },
             new Categoria() { Id = 2, Nome = "Romance" },
