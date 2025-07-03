@@ -34,4 +34,15 @@ app.MapGet("/api/livros", ([FromServices] BibliotecaDbContext ctx) => {
     return Results.NotFound();
 });
 
+// 3 - GET: Buscar TAREFA por ID
+app.MapGet("/api/livros/{id}", ([FromRoute] int id, [FromServices] BibliotecaDbContext ctx) => {
+    Livro? livro = ctx.Livros.Include(t => t.Categoria).FirstOrDefault(t => t.Id == id);
+
+    if (livro != null) {
+        return Results.Ok(livro);
+    }
+
+    return Results.NotFound();
+});
+
 app.Run();
