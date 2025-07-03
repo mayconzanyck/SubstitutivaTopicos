@@ -45,4 +45,32 @@ app.MapGet("/api/livros/{id}", ([FromRoute] int id, [FromServices] BibliotecaDbC
     return Results.NotFound();
 });
 
+// 4 - PUT: Atualizar Livro
+app.MapPut("/api/livros/{id}", ([FromRoute] int id, [FromBody] Livro livro, [FromServices] BibliotecaDbContext ctx) => {
+    Livro? entidade = ctx.Livros.Include(t => t.Categoria).FirstOrDefault(t => t.Id == id);
+
+    if (entidade == null) {
+        return Results.NotFound("Livro não encontrado");
+    }
+
+    var categoria = ctx.Categoria.Find(livro.CategoriaId);
+    if (categoria == null) {
+        return Results.BadRequest("Categoria nula");
+    }
+
+    livro.Categoria = categoria;
+
+    if (string.IsNullOrWhiteSpace(livro.Titulo) || livro.Titulo.Length < 3) {
+        return Results.BadRequest("Os requisitos para criar o livro não foram atendidos.");
+    }
+
+    entidade.Titulo = livro.Titulo;
+    entidade.StatusId = livro.StatusId;
+    entidade.Autor = livro.Autor;
+
+    ctx.Livros.Update(entidade);
+    ctx.SaveChanges();
+    return Results.Ok(ctx.Livros.Include(t => t.Categoria).FirstOrDefault(t => t.Id == id));
+});
+
 app.Run();
