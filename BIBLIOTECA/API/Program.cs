@@ -2,14 +2,27 @@ using API.Modelos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BibliotecaDbContext>();
 
 var app = builder.Build();
 
-app.MapGet("/", () => "Hello World!");
+// 1 - POST: Criar LIVRO
+app.MapPost("/api/livros", ([FromBody] Livro livro, [FromServices] BibliotecaDbContext ctx) => {
+    var categoria = ctx.Categoria.Find(livro.CategoriaId);
+    if (categoria == null) {
+        return Results.BadRequest("Status nulo");
+    }
 
+    livro.Categoria = categoria;
 
+    if (livro == null || livro.Categoria.Length < 3) {
+        return Results.BadRequest("Os requisitos para criar o livro não foram atendidos.");
+    }
+
+    ctx.Livros.Add(livro);
+    ctx.SaveChanges();
+    return Results.Created("", livro);
+});
 
 app.Run();
