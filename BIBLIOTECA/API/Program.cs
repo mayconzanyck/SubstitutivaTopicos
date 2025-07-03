@@ -42,7 +42,7 @@ app.MapGet("/api/livros/{id}", ([FromRoute] int id, [FromServices] BibliotecaDbC
         return Results.Ok(livro);
     }
 
-    return Results.NotFound();
+    return Results.NotFound("Livro com ID {id} não encontrado.");
 });
 
 // 4 - PUT: Atualizar Livro
@@ -50,7 +50,7 @@ app.MapPut("/api/livros/{id}", ([FromRoute] int id, [FromBody] Livro livro, [Fro
     Livro? entidade = ctx.Livros.Include(t => t.Categoria).FirstOrDefault(t => t.Id == id);
 
     if (entidade == null) {
-        return Results.NotFound("Livro não encontrado");
+        return Results.NotFound("Livro com ID {id} não encontrado para atualização.");
     }
 
     var categoria = ctx.Categoria.Find(livro.CategoriaId);
@@ -77,7 +77,7 @@ app.MapPut("/api/livros/{id}", ([FromRoute] int id, [FromBody] Livro livro, [Fro
 app.MapDelete("/api/livros/{id}", ([FromRoute] int id, [FromServices] BibliotecaDbContext ctx) => {
     Livro? livro = ctx.Livros.Find(id);
     if(livro == null){
-        return Results.NotFound();
+        return Results.NotFound("Livro com ID {id} não encontrado para remoção.");
     }
 
     ctx.Livros.Remove(livro);
