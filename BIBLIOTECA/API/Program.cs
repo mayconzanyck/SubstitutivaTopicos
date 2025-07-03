@@ -94,7 +94,7 @@ app.MapDelete("/api/livros/{id}", ([FromRoute] int id, [FromServices] Biblioteca
 
     ctx.Livros.Remove(livro);
     ctx.SaveChanges();
-    return Results.NoContent()
+    return Results.NoContent();
 });
 
 app.Run();
