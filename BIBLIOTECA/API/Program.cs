@@ -11,14 +11,22 @@ var app = builder.Build();
 app.MapPost("/api/livros", ([FromBody] Livro livro, [FromServices] BibliotecaDbContext ctx) => {
     var categoria = ctx.Categoria.Find(livro.CategoriaId);
     if (categoria == null) {
-        return Results.BadRequest("Status nulo");
+        return Results.NotFound("Categoria inválida. O ID da categoria fornecido não existe.");
     }
 
     livro.Categoria = categoria;
 
-    if (livro == null || livro.Categoria.Length < 3) {
-        return Results.BadRequest("Os requisitos para criar o livro não foram atendidos.");
+    if (livro == null || livro.Titulo.Length < 3) {
+        return Results.BadRequest("Título deve ter no mínimo 3 caracteres.");
     }
+
+    livro.Titulo = titulo;
+
+    if (livro == null || livro.Autor.Length < 3) {
+        return Results.BadRequest("Autor deve ter no mínimo 3 caracteres.");
+    }
+
+    livro.Autor = autor;
 
     ctx.Livros.Add(livro);
     ctx.SaveChanges();
